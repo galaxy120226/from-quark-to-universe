@@ -20,7 +20,12 @@ let changelog = `<h1>Changelog:</h1><br>
 <br>
 	<h2><text style='color:red'>No Spoiler Alert.</text></h2><br>
 	<br>
-	<h3>v0.1-everything is started.</h3><br>
+	<h3>v0.2-quark lepton boson</h3><br>
+		- 你会注意到版本号实际上没有变化，因为没有完成<br>
+		- Added 5 upgrades.<br>
+		- 4 layers.<br>
+		- endgame: 300 energy<br>
+	<h3>v0.1-started at quark</h3><br>
 		- Added 18 upgrades.<br>
 		- Added 3 buyables.<br>
 		- 3 layers.<br>

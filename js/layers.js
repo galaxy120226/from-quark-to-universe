@@ -107,6 +107,9 @@ addLayer("chapter", {
             title:"Chapter 1 - Boson",
             body(){
                 return `
+                    text text text text text text text text text text text text text<br>
+                    🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵🐵<br>
+                    text text text text text text text text text text text text text<br>
                 `
             },
             style(){
@@ -169,10 +172,33 @@ addLayer("ach", {
             done(){return player.quark.strange.gte(100)},
             onComplete(){player.ach.points = player.ach.points.add(1)},
             tooltip(){return "Have 100 strange quarks.<br>Reward: Unclock charm quark."},
-            textStyle:{"color":"#FF00FF"}
+            textStyle:{"color":"#FF00FF"},
+            unlocked(){
+                return hasAchievement(this.layer,this.id)
+            },
+        },
+        12:{
+            name(){return "Radioactive decay in 2.197µs"},
+            done(){return player.lepton.muon.gte(1)},
+            onComplete(){player.ach.points = player.ach.points.add(1)},
+            tooltip(){return "Have 1 muon.<br>tips:μ<sup>-</sup> -> e<sup>-</sup> + <text style='text-decoration: overline'>ν</text><sub>e</sub> + ν<sub>μ</sub>"},
+            textStyle:{"color":"#3e39FF"},
+            unlocked(){
+                return hasAchievement(this.layer,this.id)
+            }
+        },
+        13:{
+            name(){return "That's a big QoL"},
+            done(){return hasUpgrade("lepton",31)},
+            onComplete(){player.ach.points = player.ach.points.add(1)},
+            tooltip(){return "Have the upgrade \"Quark keep\"<br>Reward: Unlock top quark."},
+            textStyle:{"color":"#FFFF00"},
+            unlocked(){
+                return hasAchievement(this.layer,this.id)
+            }
         },
     },
-    layerShown(){return hasAchievement("ach",11)}
+    //layerShown(){return hasAchievement("ach",11)}
 })
 addLayer("energy", {
     name: "energy",
@@ -190,7 +216,6 @@ addLayer("energy", {
     tabFormat: {
         "energy": {
             content: [
-                ["overlay-head"],
                 ["display-text",
                     function(){
                         return "You have " + format(player.energy.points) + " energy,which boost quark gain by " + format(tmp.energy.energy_effect)
@@ -232,7 +257,7 @@ addLayer("energy", {
                 let color = "#BF8F8F"
                 if(hasUpgrade(this.layer,this.id)) color = "#FFFF00"
                 else{
-                    if(player.quark.points.gte(this.cost)) color = "#DDDDDD"
+                    if(this.canAfford()) color = "#DDDDDD"
                 }
                 if(hasUpgrade(this.layer,this.id)) return {"background-color":color,"outline":"10px dashed yellow"}
                 else return {"background-color":color}
@@ -253,7 +278,7 @@ addLayer("energy", {
                 let color = "#BF8F8F"
                 if(hasUpgrade(this.layer,this.id)) color = "#FFFF00"
                 else{
-                    if(player.quark.points.gte(this.cost)) color = "#DDDDDD"
+                    if(this.canAfford()) color = "#DDDDDD"
                 }
                 if(hasUpgrade(this.layer,this.id)) return {"background-color":color,"outline":"10px dashed yellow"}
                 else return {"background-color":color}
@@ -277,7 +302,7 @@ addLayer("energy", {
                 let color = "#BF8F8F"
                 if(hasUpgrade(this.layer,this.id)) color = "#FFFF00"
                 else{
-                    if(player.quark.points.gte(this.cost)) color = "#DDDDDD"
+                    if(this.canAfford()) color = "#DDDDDD"
                 }
                 if(hasUpgrade(this.layer,this.id)) return {"background-color":color,"outline":"10px dashed yellow"}
                 else return {"background-color":color}
@@ -298,7 +323,7 @@ addLayer("energy", {
                 let color = "#BF8F8F"
                 if(hasUpgrade(this.layer,this.id)) color = "#FFFF00"
                 else{
-                    if(player.quark.points.gte(this.cost)) color = "#DDDDDD"
+                    if(this.canAfford()) color = "#DDDDDD"
                 }
                 if(hasUpgrade(this.layer,this.id)) return {"background-color":color,"outline":"10px dashed yellow"}
                 else return {"background-color":color}
@@ -316,7 +341,7 @@ addLayer("energy", {
                 let color = "#BF8F8F"
                 if(hasUpgrade(this.layer,this.id)) color = "#FFFF00"
                 else{
-                    if(player.quark.points.gte(this.cost)) color = "#DDDDDD"
+                    if(this.canAfford()) color = "#DDDDDD"
                 }
                 if(hasUpgrade(this.layer,this.id)) return {"background-color":color,"outline":"10px dashed yellow"}
                 else return {"background-color":color}
@@ -339,6 +364,8 @@ addLayer("energy", {
                 let effe = player.quark.points.add(1).root(9)
                 let bottom_eff = player.quark.bottom.add(1).log(10).add(1)
                 effe = effe.mul(bottom_eff)
+                let top_eff = player.quark.top.add(1).log(10).add(1)
+                effe = effe.mul(top_eff)
 
                 if(hasUpgrade("lepton",11)) effe = effe.mul(tmp.lepton.electron_effect)
                 return effe
@@ -431,47 +458,35 @@ addLayer("quark", {
                 ],["blank",["10px","1px"]],["clickable",14]]],
                 ["row",[["display-text",
                     function(){
-                        if(tmp.quark.bottom_unlocked) return "Make your Charm quark to the bottom quark. You gain " + tmp.quark.bottomgain + " bottom quark every second"
+                        if(tmp.quark.bottom_unlocked) return "Make your Charm quark to the Bottom quark. You gain " + tmp.quark.bottomgain + " bottom quark every second"
                     }
                 ],["blank",["10px","1px"]],["clickable",15]]],
+                ["row",[["display-text",
+                    function(){
+                        if(tmp.quark.top_unlocked) return "Make your Bottom quark to the Top quark. You gain " + tmp.quark.topgain + " top quark every second"
+                    }
+                ],["blank",["10px","1px"]],["clickable",16]]],
             ],
         },
         "flavours": {
             content: [
-                ["display-text","Each quark loses 1% every second",{"font-size":"30px"}],
+                ["display-text",
+                function()
+                {
+                    if(!hasUpgrade("lepton",31))
+                        return "Each quark loses 1% every second"
+                },
+                {"font-size":"30px"}],
                 ["display-text",
                     function(){
-                        return "You have " + format(player.quark.up) + " up quark"
-                    },
-                    {"font-size":"30px"}
-                ],
-                ["display-text",
-                    function(){
-                        return "You have " + format(player.quark.down) + " down quark"
-                    },
-                    {"font-size":"30px"}
-                ],
-                ["display-text",
-                    function(){
-                        return "You have " + format(player.quark.strange) + " strange quark"
-                    },
-                    {"font-size":"30px"}
-                ],
-                ["display-text",
-                    function(){
-                        return "You have " + format(player.quark.charm) + " charm quark"
-                    },
-                    {"font-size":"30px"}
-                ],
-                ["display-text",
-                    function(){
-                        return "You have " + format(player.quark.bottom) + " bottom quark"
-                    },
-                    {"font-size":"30px"}
-                ],
-                ["display-text",
-                    function(){
-                        return "You have " + format(player.quark.top) + " top quark"
+                        let disp = ""
+                        disp = disp + "You have " + format(player.quark.up) + " up quark<br>"
+                        disp = disp + "You have " + format(player.quark.down) + " down quark<br>"
+                        disp = disp + "You have " + format(player.quark.strange) + " strange quark<br>"
+                        disp = disp + "You have " + format(player.quark.charm) + " charm quark<br>"
+                        disp = disp + "You have " + format(player.quark.bottom) + " bottom quark<br>"
+                        disp = disp + "You have " + format(player.quark.top) + " top quark<br>"
+                        return disp
                     },
                     {"font-size":"30px"}
                 ],
@@ -499,7 +514,7 @@ addLayer("quark", {
         if(player.energy.unlocked) gain = gain.mul(tmp.energy.energy_effect)
 
 
-        if(getClickableState("quark",11) == 1) gain = gain.sub(player.quark.points.mul(0.1).add(10))
+        if(getClickableState("quark",11) == 1 && !hasUpgrade("lepton",32)) gain = gain.sub(player.quark.points.mul(0.1).add(10))
         return gain
     },
     upgain(){
@@ -512,7 +527,7 @@ addLayer("quark", {
         if(hasUpgrade("quark",22)) gain = gain.mul(upgradeEffect("quark",22))
         gain = gain.mul(buyableEffect("quark",13))
         
-        if(getClickableState("quark",12) == 1) gain = gain.sub(player.quark.up.mul(0.05).add(10))
+        if(getClickableState("quark",12) == 1 && !hasUpgrade("lepton",32)) gain = gain.sub(player.quark.up.mul(0.05).add(10))
         
         gain = gain.floor()
         return gain
@@ -526,7 +541,7 @@ addLayer("quark", {
         if(hasUpgrade("quark",32)) gain = gain.mul(upgradeEffect("quark",32))
         if(hasUpgrade("quark",52)) gain = gain.mul(upgradeEffect("quark",52))
         
-        if(getClickableState("quark",13) == 1) gain = gain.sub(player.quark.down.mul(0.03).add(100))
+        if(getClickableState("quark",13) == 1 && !hasUpgrade("lepton",32)) gain = gain.sub(player.quark.down.mul(0.03).add(100))
         
         gain = gain.floor()
         return gain
@@ -536,7 +551,7 @@ addLayer("quark", {
         if(getClickableState("quark",13) == 1) gain = player.quark.down.max(0).div(100).root(3)
         if(hasUpgrade("quark",51)) gain = gain.mul(upgradeEffect("quark",51))
         
-        if(getClickableState("quark",14) == 1) gain = gain.sub(player.quark.strange.mul(0.025).add(100))
+        if(getClickableState("quark",14) == 1 && !hasUpgrade("lepton",32)) gain = gain.sub(player.quark.strange.mul(0.025).add(100))
         
         gain = gain.floor()
         return gain
@@ -550,7 +565,7 @@ addLayer("quark", {
         
         if(hasUpgrade("energy",13)) gain = gain.mul(upgradeEffect("energy",13))
         
-        if(getClickableState("quark",15) == 1) gain = gain.sub(player.quark.strange.mul(0.02).add(1000))
+        if(getClickableState("quark",15) == 1 && !hasUpgrade("lepton",32)) gain = gain.sub(player.quark.charm.mul(0.02).add(1000))
         
         gain = gain.floor()
         return gain
@@ -560,6 +575,17 @@ addLayer("quark", {
         let bas = n(1000)
         let roo = n(3)
         if(getClickableState("quark",15) == 1) gain = player.quark.charm.max(0).div(bas).root(roo)
+        
+        if(getClickableState("quark",16) == 1 && !hasUpgrade("lepton",32)) gain = gain.sub(player.quark.bottom.mul(0.016).add(500))
+        
+        gain = gain.floor()
+        return gain
+    },
+    topgain(){
+        let gain = n(0)
+        let bas = n(1000)
+        let roo = n(2)
+        if(getClickableState("quark",16) == 1) gain = player.quark.bottom.max(0).div(bas).root(roo)
         //if(hasUpgrade("quark",32)) gain = gain.mul(upgradeEffect("quark",32))
         
         gain = gain.floor()
@@ -572,12 +598,17 @@ addLayer("quark", {
         player.quark.strange = player.quark.strange.add(tmp.quark.strangegain.mul(diff))
         player.quark.charm = player.quark.charm.add(tmp.quark.charmgain.mul(diff))
         player.quark.bottom = player.quark.bottom.add(tmp.quark.bottomgain.mul(diff))
+        player.quark.top = player.quark.top.add(tmp.quark.topgain.mul(diff))
 
-        player.quark.up = player.quark.up.sub(player.quark.up.mul(0.01).mul(diff))
-        player.quark.down = player.quark.down.sub(player.quark.down.mul(0.01).mul(diff))
-        player.quark.strange = player.quark.strange.sub(player.quark.strange.mul(0.01).mul(diff))
-        player.quark.charm = player.quark.charm.sub(player.quark.charm.mul(0.01).mul(diff))
-        player.quark.bottom = player.quark.bottom.sub(player.quark.bottom.mul(0.01).mul(diff))
+        if(!hasUpgrade("lepton",31)){
+            player.quark.up = player.quark.up.sub(player.quark.up.mul(0.01).mul(diff))
+            player.quark.down = player.quark.down.sub(player.quark.down.mul(0.01).mul(diff))
+            player.quark.strange = player.quark.strange.sub(player.quark.strange.mul(0.01).mul(diff))
+            player.quark.charm = player.quark.charm.sub(player.quark.charm.mul(0.01).mul(diff))
+            player.quark.bottom = player.quark.bottom.sub(player.quark.bottom.mul(0.01).mul(diff))
+            player.quark.top = player.quark.top.sub(player.quark.top.mul(0.01).mul(diff))
+        }
+        
 
         if(player.quark.points.lte(0)){
             setClickableState("quark",11,0)
@@ -598,6 +629,10 @@ addLayer("quark", {
         if(player.quark.charm.lte(0)){
             setClickableState("quark",15,0)
             player.quark.charm = n(0)
+        }
+        if(player.quark.bottom.lte(0)){
+            setClickableState("quark",16,0)
+            player.quark.bottom = n(0)
         }
     },
     upgrades: {
@@ -1121,6 +1156,30 @@ addLayer("quark", {
                 return {"background-color":color,"height":"20px","min-height":"0px","width":"40px"}
             }
         },
+        16:{
+            display(){
+                let disp
+                if(getClickableState(this.layer,this.id) == 0) disp = "close"
+                else disp = "open"
+                return disp
+            },
+            canClick(){
+                return true
+            },
+            onClick(){
+                if(getClickableState(this.layer,this.id) == 0) setClickableState(this.layer,this.id,1)
+                else setClickableState(this.layer,this.id,0)
+            },
+            unlocked(){
+                return tmp.quark.top_unlocked
+            },
+            style(){
+                let color
+                if(getClickableState(this.layer,this.id) == 0) color = "red"
+                else color = "green"
+                return {"background-color":color,"height":"20px","min-height":"0px","width":"40px"}
+            }
+        },
     },
     buyables: {
         11: {
@@ -1234,6 +1293,9 @@ addLayer("quark", {
     bottom_unlocked(){
         return hasUpgrade("quark",54)
     },
+    top_unlocked(){
+        return hasAchievement("ach",13)
+    },
     row: 0,
     layerShown(){return true}
 })
@@ -1269,14 +1331,17 @@ addLayer("lepton", {
                     {"font-size":"20px"}
                 ],
                 ["blank",["1px","120px"]],
-                ["row",[["upgrade",11]]]
+                ["row",[["upgrade",11],["upgrade",12],["upgrade",13]]],
+                ["blank",["1px","50px"]],
+                ["row",[["upgrade",21],["upgrade",22]]],
+                ["row",[["upgrade",31],["upgrade",32]]]
             ],
         },
         "count": {
             content: [
                 ["display-text",
                     function(){
-                        let disp =""
+                        let disp = "If any num is a negative number,it's only antimatter.<br>"
                         disp = disp + "You have " + format(player.lepton.electron) + " electron.<br>"
                         disp = disp + "You have " + format(player.lepton.muon) + " muon.<br>"
                         disp = disp + "You have " + format(player.lepton.tau) + " tau.<br>"
@@ -1292,7 +1357,10 @@ addLayer("lepton", {
         "lepton get": {
             content: [
                 ["blank",["1px","100px"]],
-                ["row",[["clickable",11],["blank",["40px","1px"]],["display-text",function(){return "boost energy by " + format(tmp.lepton.electron_effect)},{"font-size":"20px"}]]]
+                ["row",[["clickable",11],["blank",["40px","1px"]],
+                 ["display-text",function(){return "boost energy by " + format(tmp.lepton.electron_effect)},{"font-size":"20px"}]]],
+                ["row",[["clickable",12],["blank",["40px","1px"]],
+                 ["display-text",function(){return "Why there is no effect?"},{"font-size":"20px"}]]]
             ],
         },
     },
@@ -1302,12 +1370,15 @@ addLayer("lepton", {
         return gain
     },
     electron_effect(){
-        return player.lepton.electron.add(1).root(5)
+        let effe = player.lepton.electron.add(1).root(5)
+        if(hasUpgrade("lepton",22)) effe = effe.pow(1.2)
+        return effe
     },
     update(diff){
         player.lepton.points = player.lepton.points.add(tmp.lepton.lepton_gain.mul(diff))
 
-        if(player.lepton.electron.gt(player.energy.points)) player.lepton.electron = player.energy.points
+        if(player.lepton.electron.gt(player.energy.points.mul(layers.lepton.clickables[11].limit()))) player.lepton.electron = player.energy.points.mul(layers.lepton.clickables[11].limit())
+        if(player.lepton.electron_neutrino.gt(player.energy.points.mul(layers.lepton.clickables[11].limit()))) player.lepton.electron_neutrino = player.energy.points.mul(layers.lepton.clickables[11].limit())
     },
     upgrades:{
         11: {
@@ -1320,24 +1391,182 @@ addLayer("lepton", {
                 let color = "#BF8F8F"
                 if(hasUpgrade(this.layer,this.id)) color = "#3e39ff"
                 else{
-                    if(player.quark.points.gte(this.cost)) color = "#DDDDDD"
+                    if(player.lepton.points.gte(this.cost)) color = "#DDDDDD"
                 }
-                return {"background-color":color,"border":"3px dotted white"}
+                return {"background-color":color,"border":"3px dotted white","color":"white"}
             },
+        },
+        12: {
+            fullDisplay(){
+                let disp = "<h2>More Energy</h2>" + "<br>Unlock muon." + "<br>requares: 800 energy"
+                return disp
+            },
+            canAfford(){
+                return player.energy.points.gte(800)
+            },
+            unlocked(){
+                return hasUpgrade("lepton",22)
+            },
+            style(){
+                let color = "#BF8F8F"
+                if(hasUpgrade(this.layer,this.id)) color = "#3e39ff"
+                else{
+                    if(player.lepton.points.gte(this.cost)) color = "#DDDDDD"
+                }
+                return {"background-color":color,"border":"3px dotted white","color":"white"}
+            },
+        },
+        21: {
+            fullDisplay(){
+                let disp = "<h2>Upgraded electron</h2>" + "<br>Electron's get and limit is boost by energy.😈<br>currectly: x" + format(this.effect()) + "<br>cost: 300 electron"
+                return disp
+            },
+            canAfford(){
+                return player.lepton.electron.gte(300)
+            },
+            pay(){
+                player.lepton.electron = player.lepton.electron.sub(300)
+            },
+            effect(){
+                return player.energy.points.add(1).log(10).add(1)
+            },
+            style(){
+                let color = "#BF8F8F"
+                if(hasUpgrade(this.layer,this.id)) color = "#3e39ff"
+                else{
+                    if(this.canAfford()) color = "#DDDDDD"
+                }
+                return {"background-color":color,"border":"4px dotted white","color":"white"}
+            },
+            unlocked(){
+                return hasUpgrade("lepton",11)
+            }
+        },
+        22: {
+            fullDisplay(){
+                let disp = "<h2>Powerful electron</h2>" + "<br>Electron's effect is stronger." + "<br>cost: 2000 electron"
+                return disp
+            },
+            canAfford(){
+                return player.lepton.electron.gte(2000)
+            },
+            pay(){
+                player.lepton.electron = player.lepton.electron.sub(2000)
+            },
+            style(){
+                let color = "#BF8F8F"
+                if(hasUpgrade(this.layer,this.id)) color = "#3e39ff"
+                else{
+                    if(this.canAfford()) color = "#DDDDDD"
+                }
+                return {"background-color":color,"border":"5px dotted white","color":"white"}
+            },
+            unlocked(){
+                return hasUpgrade("lepton",11)
+            }
+        },
+        31: {
+            fullDisplay(){
+                let disp = "<h2>Quark keep</h2>" + "<br>Quarks doesn't lose." + "<br>cost: 10 muon neutrino."
+                return disp
+            },
+            canAfford(){
+                return player.lepton.muon_neutrino.gte(10)
+            },
+            pay(){
+                player.lepton.muon_neutrino = player.lepton.muon_neutrino.sub(10)
+            },
+            style(){
+                let color = "#BF8F8F"
+                if(hasUpgrade(this.layer,this.id)) color = "gold"
+                else{
+                    if(this.canAfford()) color = "#DDDDDD"
+                }
+                return {"background-color":color,"border":"5px dotted white","color":"white"}
+            },
+            unlocked(){
+                return hasUpgrade("lepton",12)
+            }
+        },
+        32: {
+            fullDisplay(){
+                let disp = "<h2>Quark no spend</h2>" + "<br>Upquark don't spend Quark,Downquark don't spend Upquark,etc." + "<br>cost: 20 muon neutrino."
+                return disp
+            },
+            canAfford(){
+                return player.lepton.muon_neutrino.gte(20)
+            },
+            pay(){
+                player.lepton.muon_neutrino = player.lepton.muon_neutrino.sub(20)
+            },
+            style(){
+                let color = "#BF8F8F"
+                if(hasUpgrade(this.layer,this.id)) color = "gold"
+                else{
+                    if(this.canAfford()) color = "#DDDDDD"
+                }
+                return {"background-color":color,"border":"6px dotted white","color":"white"}
+            },
+            unlocked(){
+                return hasUpgrade("lepton",12)
+            }
         },
     },
     clickables:{
         11:{
             display(){
-                let disp = "Spend " + format(this.effect()) + " lepton to get " + format(this.effect()) + " electron.(can't have more than energy*1 electron)"
+                let disp = "Spend " + format(this.effect()) + " lepton to get " + format(this.effect()) + " electron.(can't have more than energy*" + format(this.limit()) + " electron)"
                 disp = "<p style = 'font-size:12px'>" + disp + "</p>"
                 return disp
             },
             canClick(){
-                return true
+                return player.lepton.points.gte(this.effect)
             },
             onClick(){
+                player.lepton.points = player.lepton.points.sub(this.effect())
                 player.lepton.electron = player.lepton.electron.add(this.effect())
+                player.lepton.electron_neutrino = player.lepton.electron_neutrino.add(this.effect())
+            },
+            onHold(){
+                this.onClick()
+            },
+            effect(){
+                let effe = one
+                if(hasUpgrade("lepton",21)) effe = effe.mul(upgradeEffect("lepton",21))
+                return effe
+            },
+            limit(){
+                let lim = one
+                if(hasUpgrade("lepton",21)) lim = lim.mul(upgradeEffect("lepton",21))
+                return lim
+            },
+            unlocked(){
+                return tmp.lepton.electron_unclocked
+            },
+            style(){
+                return {"background-color":"#3e39ff","border":"3px dotted white"}
+            }
+        },
+        12:{
+            display(){
+                let disp = "Spend " + this.effect().mul(206.77) + " electron to get " + format(this.effect()) + " muon."
+                disp = "<p style = 'font-size:12px'>" + disp + "</p>"
+                return disp
+            },
+            canClick(){
+                return player.lepton.electron.gte(this.effect().mul(206.77))
+            },
+            onClick(){
+                player.lepton.electron = player.lepton.electron.sub(this.effect().mul(206.77))
+                player.lepton.muon = player.lepton.muon.add(this.effect())
+                if(!hasAchievement("ach",12)) player.ach.achievements.push("12")
+                player.lepton.electron = player.lepton.electron.add(this.effect())
+                player.lepton.muon_neutrino = player.lepton.muon_neutrino.add(this.effect())
+                player.lepton.electron_neutrino = player.lepton.electron_neutrino.sub(this.effect())
+                player.lepton.muon = zero
+            },
+            onHold(){
+                this.onClick()
             },
             effect(){
                 let effe = one
@@ -1347,7 +1576,8 @@ addLayer("lepton", {
                 return tmp.lepton.electron_unclocked
             },
             style(){
-                return {"background-color":"#3e39ff","border":"3px dotted white"}
+                if(this.canClick()) return {"background-color":"#3e39ff","border":"5px dotted white"}
+                else return {"background-color":"#bf8f8f","border":"5px dotted white"}
             }
         },
     },

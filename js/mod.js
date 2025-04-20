@@ -20,18 +20,18 @@ let changelog = `<h1>Changelog:</h1><br>
 <br>
 	<h2><text style='color:red'>No Spoiler Alert.</text></h2><br>
 	<br>
-	<h3>v0.2-quark lepton boson</h3><br>
+	<h3>v0.2-quark lepton boson -- v0.1.1 / v0.1.2 </h3><br>
 		- 你会注意到版本号实际上没有变化，因为没有完成<br>
-		- Added 5 upgrades.<br>
-		- 4 layers.<br>
-		- endgame: 300 energy<br>
+		- Added 5+5 upgrades.<br>
+		- 4+1 layers.<br>
+		- endgame: 300 energy / 3000 energy<br>
 	<h3>v0.1-started at quark</h3><br>
 		- Added 18 upgrades.<br>
 		- Added 3 buyables.<br>
 		- 3 layers.<br>
 		- endgame: buy upgrade "Downquark Boost+" (and you can get above 20 energy)
 `
-
+//过去给未来的提示：上次做到20muon neutrino
 let winText = `Congratulations! You have reached the end and beaten this game.But this only a small pieces of this game...`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
@@ -67,7 +67,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return hasUpgrade("energy",11)
+	return player.energy.points.gte(3000)
 }
 
 

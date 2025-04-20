@@ -141,6 +141,7 @@ var systemComponents = {
         <span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
         <a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br>
         <a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a><br>
+		<a class="link" href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=o73GAJiCYLs-B9XbwG1YEiJwX_l3ouIt&authKey=ZS3LIQeRCNJQEHPr%2FG4gmZSWHjf7Q5oAbX8vU%2FHmf9rffS9jkNCmGy5bH%2FoQImqI&noverify=0&group_code=1032451919" target="_blank" v-bind:style="{'font-size': '16px'}">QQ群（人太少了宣一下）</a><br>
 		<br><br>
         Time Played: {{ formatTime(player.timePlayed) }}<br><br>
         <h3>Hotkeys</h3><br>

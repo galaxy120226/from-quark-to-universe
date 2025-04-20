@@ -1,0 +1,97 @@
+@keyframes body_quark{
+    0% {
+        border-color:red;
+    }
+
+    33% {
+        border-color:green;
+    }
+
+    66% {
+        border-color:blue;
+    }
+
+    100% {
+        border-color:red;
+    }
+}
+@keyframes title_quark{
+    0% {
+        background-color:red;
+    }
+
+    33% {
+        background-color:green;
+    }
+
+    66% {
+        background-color:blue;
+    }
+
+    100% {
+        background-color:red;
+    }
+}
+@keyframes tab_button_quark{
+    0% {
+        background-color:red;
+        border-color:red;
+    }
+
+    33% {
+        background-color:green;
+        border-color:green;
+    }
+
+    66% {
+        background-color:blue;
+        border-color:blue
+    }
+
+    100% {
+        background-color:red;
+        border-color:red
+    }
+}
+@keyframes body_lepton{
+    0% {
+        border-color:black;
+    }
+
+    50% {
+        border-color:white;
+    }
+
+    100% {
+        border-color:black;
+    }
+}
+@keyframes title_lepton{
+    0% {
+        background-color:black;
+    }
+
+    50% {
+        background-color:white;
+    }
+
+    100% {
+        background-color:black;
+    }
+}
+@keyframes boson{
+    0% {
+        transform:rotate3d(0);
+    }
+
+    50% {
+        transform:rotate3d(0,1,0,180deg);
+    }
+
+    100% {
+        transform:rotate3d(0);
+    }
+}
+.diuifsrhdfjgnskrduhfsjkf{
+    color :#111111
+}
